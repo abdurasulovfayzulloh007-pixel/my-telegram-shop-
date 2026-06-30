@@ -34,9 +34,9 @@
         .product-img { width: 100%; height: 110px; object-fit: cover; border-radius: 12px; margin-bottom: 10px; }
         .product-title { font-size: 14px; font-weight: 600; line-height: 1.3; margin-bottom: 6px; height: 36px; overflow: hidden; }
         .product-price { color: var(--accent-color); font-weight: 700; font-size: 15px; margin-bottom: 12px; }
-        .btn-add { background-color: var(--main-color); color: #fff; border: none; width: 100%; padding: 10px 0; border-radius: 10px; font-weight: 600; }
+        .btn-add { background-color: var(--main-color); color: #fff; border: none; width: 100%; padding: 10px 0; border-radius: 10px; font-weight: 600; cursor: pointer; }
         .counter-box { display: flex; justify-content: space-between; align-items: center; display: none; }
-        .btn-count { background: #ffffff; color: var(--main-color); border: 1px solid #e5e5ea; width: 34px; height: 34px; font-size: 20px; font-weight: 600; border-radius: 10px; }
+        .btn-count { background: #ffffff; color: var(--main-color); border: 1px solid #e5e5ea; width: 34px; height: 34px; font-size: 20px; font-weight: 600; border-radius: 10px; cursor: pointer; }
         .cart-status { position: fixed; bottom: 20px; left: 16px; right: 16px; background: var(--main-color); border-radius: 16px; display: none; }
         .main-btn { width: 100%; background: none; border: none; color: #fff; padding: 16px; font-size: 16px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
     </style>
@@ -65,27 +65,23 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Botdan keladigan dinamik mahsulotlar ro'yxati
-        let products = [];
-        let cart = {};
+        // 📦 TOVARLAR BAZASI - Har qanday telefonda ishlashi uchun shu yerga mustahkamlandi
+        const products = [
+            { id: 1, category: "Maishiy Texnika", title: "Elektr Mikser (7 tezlikli)", price: 250000, image: "https://picsum.photos/id/1060/400/300" },
+            { id: 2, category: "Maishiy Texnika", title: "Multvarka (Katta hajmli)", price: 680000, image: "https://picsum.photos/id/365/400/300" },
+            { id: 3, category: "Oshxona Buyumlari", title: "Zanglamas pichoqlar to'plami", price: 180000, image: "https://picsum.photos/id/488/400/300" },
+            { id: 4, category: "Oshxona Buyumlari", title: "Mexanik Zakrivalka (Sifatli)", price: 95000, image: "https://picsum.photos/id/292/400/300" },
+            { id: 5, category: "Plastmassa Mahsulotlari", title: "Plastmassa Idishlar (Set 5ta)", price: 75000, image: "https://picsum.photos/id/30/400/300" },
+            { id: 6, category: "Plastmassa Mahsulotlari", title: "Plastmassa Organayzer", price: 45000, image: "https://picsum.photos/id/625/400/300" }
+        ];
 
-        // Bot `main.py` orqali bazadagi mahsulotlarni HTML ga uzatadi
-        const urlParams = new URLSearchParams(window.location.search);
-        const encodedData = urlParams.get('data');
-        if (encodedData) {
-            try { products = JSON.parse(decodeURIComponent(encodedData)); } catch(e) { console.log(e); }
-        }
+        let cart = {};
 
         function displayShop(productsToRender = products) {
             const container = document.getElementById('shop-container');
             container.innerHTML = ""; 
             const categories = [...new Set(productsToRender.map(p => p.category))];
             
-            if(categories.length === 0) {
-                container.innerHTML = "<p style='text-align:center; opacity:0.5;'>Hozircha mahsulot yo'q yoki topilmadi 😔</p>";
-                return;
-            }
-
             categories.forEach(cat => {
                 const sec = document.createElement('div');
                 sec.className = 'category-section';
@@ -138,23 +134,19 @@
             document.getElementById('total-price-btn').innerText = total.toLocaleString() + " so'm";
         }
 
-        // GPS Lokatsiyani olish va Botga yuborish
         function getGeoAndSend() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => { sendAllData(position.coords.latitude, position.coords.longitude); },
-                    (error) => { alert("Iltimos, buyurtma berish uchun GPS (lokatsiya) ruxsatini bering!"); }
+                    (error) => { alert("Iltimos, buyurtma berish uchun GPS ruxsatini bering!"); }
                 );
-            } else {
-                sendAllData(null, null);
-            }
+            } else { sendAllData(null, null); }
         }
 
         function sendAllData(lat, lon) {
             let items = Object.values(cart);
             let total = items.reduce((sum, item) => sum + (item.price * item.count), 0);
-            const orderData = { items: items, total: total, lat: lat, lon: lon };
-            tg.sendData(JSON.stringify(orderData));
+            tg.sendData(JSON.stringify({ items: items, total: total, lat: lat, lon: lon }));
             tg.close();
         }
 
