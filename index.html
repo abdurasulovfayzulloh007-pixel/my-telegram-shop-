@@ -3,79 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Do'kon</title>
+    <title>Vodiy Savdo - Mini Do'kon</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --main-color: #2481cc;
+            --bg-color: var(--tg-theme-bg-color, #ffffff);
+            --text-color: var(--tg-theme-text-color, #000000);
+            --card-bg: var(--tg-theme-secondary-bg-color, #f5f5f5);
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-            margin: 0; padding: 15px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0; padding: 12px;
+            padding-bottom: 80px;
         }
-        h2 { text-align: center; color: var(--tg-theme-button-color, #2481cc); }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h2 { margin: 5px 0; font-size: 22px; color: var(--main-color); }
+        .header p { margin: 0; font-size: 14px; opacity: 0.7; }
+        
+        .category-title {
+            font-size: 18px; font-weight: bold; margin: 15px 0 10px 0;
+            border-left: 4px solid var(--main-color); padding-left: 8px;
+        }
+        
+        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .product-card {
-            border: 1px solid #e0e0e0; padding: 15px; margin-bottom: 15px; 
-            border-radius: 12px; display: flex; justify-content: space-between; 
-            align-items: center; background: var(--tg-theme-secondary-bg-color, #f9f9f9);
+            background: var(--card-bg); border-radius: 12px; padding: 10px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative;
         }
-        .product-info strong { display: block; font-size: 16px; margin-bottom: 5px; }
-        .product-info span { color: #4caf50; font-weight: bold; }
-        button {
-            background-color: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none; padding: 10px 16px; border-radius: 8px; 
-            cursor: pointer; font-weight: bold; transition: 0.2s;
+        .product-img {
+            width: 100%; height: 110px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;
         }
-        button:active { transform: scale(0.95); }
+        .product-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; height: 38px; overflow: hidden; }
+        .product-price { color: #4caf50; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
+        
+        .btn-add {
+            background-color: var(--main-color); color: #fff; border: none;
+            width: 100%; padding: 8px 0; border-radius: 6px; font-weight: bold; cursor: pointer;
+        }
+        .counter-box { display: flex; justify-content: space-between; align-items: center; display: none; }
+        .btn-count {
+            background: #e0e0e0; color: #000; border: none; width: 32px; height: 32px;
+            font-size: 18px; font-weight: bold; border-radius: 6px; cursor: pointer;
+        }
+        .count-num { font-weight: bold; font-size: 16px; }
+
         .cart-status {
-            position: fixed; bottom: 20px; left: 15px; right: 15px; display: none;
+            position: fixed; bottom: 15px; left: 12px; right: 12px;
+            background: var(--main-color); border-radius: 10px; display: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .main-btn { width: 100%; padding: 15px; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .main-btn {
+            width: 100%; background: none; border: none; color: #fff;
+            padding: 14px; font-size: 16px; font-weight: bold; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-    <h2>?? Bizning Do'kon</h2>
-    <div id="products"></div>
+    <div class="header">
+        <h2>VODIY SAVDO</h2>
+        <p>Sifatli maishiy texnika va Xitoy tovarlari do'koni</p>
+    </div>
+
+    <div id="shop-container"></div>
 
     <div class="cart-status">
-        <button id="main-btn" class="main-btn" onclick="sendOrder()">Buyurtma berish (0 so'm)</button>
+        <button id="main-btn" class="main-btn" onclick="sendOrder()">🛒 Savatchani ko'rish (0 so'm)</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Ilovani to'liq ekranga ochish
+        tg.expand();
 
-        // SIZNING TAVARLARINGIZ RO'YXATI (Shu yerga o'zingiznikini yozasiz)
         const products = [
-            { id: 1, title: "iPhone 15 Pro", price: 14000000 },
-            { id: 2, title: "AirPods Pro 2", price: 2800000 },
-            { id: 3, title: "MacBook Air M2", price: 13500000 }
+            { id: 1, category: "Maishiy Texnika", title: "Elektr Mikser (7 tezlikli)", price: 250000, image: "https://images.unsplash.com/photo-1578643463396-0997cb5328c1?w=400" },
+            { id: 2, category: "Maishiy Texnika", title: "Multivarka (Katta hajmli)", price: 680000, image: "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=400" },
+            { id: 3, category: "Oshxona Buyumlari", title: "Zanglamas pichoqlar to'plami", price: 180000, image: "https://images.unsplash.com/photo-1593616565191-bb27e7f9ff3a?w=400" },
+            { id: 4, category: "Oshxona Buyumlari", title: "Mexanik Zakrivalka (Sifatli)", price: 950000, image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=400" },
+            { id: 5, category: "Plastmassa Mahsulotlari", title: "Plastmassa Idishlar (Set 5ta)", price: 75000, image: "https://images.unsplash.com/photo-1604176354204-9268737828e4?w=400" },
+            { id: 6, category: "Plastmassa Mahsulotlari", title: "Plastmassa Organayzer", price: 45000, image: "https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?w=400" }
         ];
 
         let cart = {};
 
-        function displayProducts() {
-            const container = document.getElementById('products');
-            products.forEach(p => {
-                container.innerHTML += `
-                    <div class="product-card">
-                        <div class="product-info">
-                            <strong>${p.title}</strong>
-                            <span>${p.price.toLocaleString()} so'm</span>
+        function displayShop() {
+            const container = document.getElementById('shop-container');
+            const categories = [...new Set(products.map(p => p.category))];
+            
+            categories.forEach(cat => {
+                const titleElement = document.createElement('div');
+                titleElement.className = 'category-title';
+                titleElement.innerText = cat;
+                container.appendChild(titleElement);
+
+                const grid = document.createElement('div');
+                grid.className = 'products-grid';
+                
+                const catProducts = products.filter(p => p.category === cat);
+                catProducts.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <img src="${p.image}" class="product-img" alt="${p.title}">
+                        <div class="product-title">${p.title}</div>
+                        <div class="product-price">${p.price.toLocaleString()} so'm</div>
+                        
+                        <button id="add-btn-${p.id}" class="btn-add" onclick="changeCount(${p.id}, 1)">Qo'shish</button>
+                        
+                        <div id="counter-${p.id}" class="counter-box">
+                            <button class="btn-count" onclick="changeCount(${p.id}, -1)">-</button>
+                            <span id="num-${p.id}" class="count-num">0</span>
+                            <button class="btn-count" onclick="changeCount(${p.id}, 1)">+</button>
                         </div>
-                        <button onclick="addToCart(${p.id})">Qo'shish</button>
-                    </div>
-                `;
+                    `;
+                    grid.appendChild(card);
+                });
+                container.appendChild(grid);
             });
         }
 
-        function addToCart(id) {
-            if (cart[id]) {
-                cart[id].count += 1;
-            } else {
+        function changeCount(id, change) {
+            const addBtn = document.getElementById(`add-btn-${id}`);
+            const counterBox = document.getElementById(`counter-${id}`);
+            const numSpan = document.getElementById(`num-${id}`);
+            
+            if (!cart[id]) {
                 const prod = products.find(p => p.id === id);
-                cart[id] = { title: prod.title, price: prod.price, count: 1 };
+                cart[id] = { title: prod.title, price: prod.price, count: 0 };
+            }
+            
+            cart[id].count += change;
+            
+            if (cart[id].count <= 0) {
+                delete cart[id];
+                addBtn.style.display = 'block';
+                counterBox.style.display = 'none';
+            } else {
+                addBtn.style.display = 'none';
+                counterBox.style.display = 'flex';
+                numSpan.innerText = cart[id].count;
             }
             updateCartButton();
         }
@@ -91,7 +161,7 @@
             const mainBtn = document.getElementById('main-btn');
             if (itemsCount > 0) {
                 document.querySelector('.cart-status').style.display = 'block';
-                mainBtn.innerText = `?? Buyurtma berish (${total.toLocaleString()} so'm)`;
+                mainBtn.innerText = `🛒 Buyurtma berish (${total.toLocaleString()} so'm)`;
             } else {
                 document.querySelector('.cart-status').style.display = 'none';
             }
@@ -101,17 +171,12 @@
             let items = Object.values(cart);
             let total = items.reduce((sum, item) => sum + (item.price * item.count), 0);
 
-            const orderData = {
-                items: items,
-                total: total
-            };
-
-            // Ma'lumotni Telegram botga yuborish
+            const orderData = { items: items, total: total };
             tg.sendData(JSON.stringify(orderData));
             tg.close();
         }
 
-        displayProducts();
+        displayShop();
     </script>
 </body>
 </html>
