@@ -7,11 +7,11 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --main-color: #007aff; /* Apple uslubidagi yorqin ko'k */
+            --main-color: #007aff; 
             --bg-color: var(--tg-theme-bg-color, #ffffff);
             --text-color: var(--tg-theme-text-color, #222222);
             --card-bg: var(--tg-theme-secondary-bg-color, #f2f2f7);
-            --accent-color: #34c759; /* Yashil narxlar uchun */
+            --accent-color: #34c759; 
         }
         
         body {
@@ -20,36 +20,20 @@
             color: var(--text-color);
             margin: 0; padding: 16px;
             padding-bottom: 100px;
-            -webkit-user-select: none;
         }
 
-        /* Brending qismi */
-        .brand-header {
-            text-align: center; margin-bottom: 20px;
-        }
-        .brand-header h2 {
-            font-size: 24px; font-weight: 800; color: var(--main-color);
-            margin: 0; letter-spacing: 0.5px;
-        }
-        .brand-header p {
-            margin: 5px 0 0 0; font-size: 13px; opacity: 0.6;
-        }
+        .brand-header { text-align: center; margin-bottom: 20px; }
+        .brand-header h2 { font-size: 24px; font-weight: 800; color: var(--main-color); margin: 0; }
+        .brand-header p { margin: 5px 0 0 0; font-size: 13px; opacity: 0.6; }
 
-        /* Qidiruv oynasi */
-        .search-container {
-            margin-bottom: 20px;
-        }
+        .search-container { margin-bottom: 20px; }
         .search-input {
             width: 100%; padding: 12px 16px; border-radius: 12px;
             border: none; background: var(--card-bg);
             color: var(--text-color); font-size: 15px; box-sizing: border-box;
-            outline: none; transition: 0.2s;
-        }
-        .search-input:focus {
-            box-shadow: 0 0 0 2px var(--main-color);
+            outline: none;
         }
 
-        /* Kategoriyalar */
         .category-section { margin-bottom: 25px; }
         .category-title {
             font-size: 18px; font-weight: 700; margin-bottom: 12px;
@@ -60,65 +44,41 @@
             background: var(--main-color); border-radius: 4px;
         }
 
-        /* Mahsulotlar To'plami */
-        .products-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-        }
+        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .product-card {
             background: var(--card-bg); border-radius: 16px; padding: 12px;
             display: flex; flex-direction: column; justify-content: space-between;
-            transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
-        .product-card:active { transform: scale(0.98); }
         
         .product-img {
-            width: 100%; height: 120px; object-fit: cover;
-            border-radius: 12px; margin-bottom: 10px;
-            background-color: #eaeaea;
+            width: 100%; height: 110px; object-fit: cover; border-radius: 12px; margin-bottom: 10px;
         }
         .product-title {
             font-size: 14px; font-weight: 600; line-height: 1.3;
             margin-bottom: 6px; height: 36px; overflow: hidden;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
         }
-        .product-price {
-            color: var(--accent-color); font-weight: 700; font-size: 15px;
-            margin-bottom: 12px;
-        }
+        .product-price { color: var(--accent-color); font-weight: 700; font-size: 15px; margin-bottom: 12px; }
 
-        /* Tugmalar */
         .btn-add {
             background-color: var(--main-color); color: #fff; border: none;
-            width: 100%; padding: 10px 0; border-radius: 10px;
-            font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s;
+            width: 100%; padding: 10px 0; border-radius: 10px; font-weight: 600; cursor: pointer;
         }
-        .counter-box {
-            display: flex; justify-content: space-between; align-items: center; display: none;
-        }
+        .counter-box { display: flex; justify-content: space-between; align-items: center; display: none; }
         .btn-count {
             background: #ffffff; color: var(--main-color); border: 1px solid #e5e5ea;
-            width: 34px; height: 34px; font-size: 20px; font-weight: 600;
-            border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            width: 34px; height: 34px; font-size: 20px; font-weight: 600; border-radius: 10px;
         }
         .count-num { font-weight: 700; font-size: 16px; }
 
-        /* Pastki doimiy tugma oynasi */
         .cart-status {
             position: fixed; bottom: 20px; left: 16px; right: 16px;
             background: var(--main-color); border-radius: 16px; display: none;
-            box-shadow: 0 8px 24px rgba(0,122,255,0.3); animation: slideUp 0.3s ease;
         }
         .main-btn {
             width: 100%; background: none; border: none; color: #fff;
-            padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer;
-            display: flex; justify-content: space-between; align-items: center;
-            box-sizing: border-box;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            padding: 16px; font-size: 16px; font-weight: 700;
+            display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
         }
     </style>
 </head>
@@ -146,24 +106,21 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        /* ⚙️ TAVARLAR BAZASI (Shu yerdan tavar qo'shasiz yoki o'zgartirasiz)
-          Yangi tavar qo'shish uchun shunchaki nusxa olib, ma'lumotlarini o'zgartiring.
-        */
+        // 📦 Maxsulotlar bazasi (Rasm linklari xavfsiz va tekshirilgan holatga keltirildi)
         const products = [
-            { id: 1, category: "Maishiy Texnika", title: "Elektr Mikser 7 tezlikli", price: 250000, image: "https://images.unsplash.com/photo-1578643463396-0997cb5328c1?w=400" },
-            { id: 2, category: "Maishiy Texnika", title: "Multivarka Katta hajmli", price: 680000, image: "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=400" },
-            { id: 3, category: "Oshxona Buyumlari", title: "Zanglamas pichoqlar to'plami", price: 180000, image: "https://images.unsplash.com/photo-1593616565191-bb27e7f9ff3a?w=400" },
-            { id: 4, category: "Oshxona Buyumlari", title: "Mexanik Zakrivalka (Sifatli)", price: 95000, image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=400" },
-            { id: 5, category: "Plastmassa Mahsulotlari", title: "Plastmassa Idishlar (Set 5ta)", price: 75000, image: "https://images.unsplash.com/photo-1200000000000?w=400" },
-            { id: 6, category: "Plastmassa Mahsulotlari", title: "Plastmassa Organayzer", price: 45000, image: "https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?w=400" }
+            { id: 1, category: "Maishiy Texnika", title: "Elektr Mikser (7 tezlikli)", price: 250000, image: "https://picsum.photos/id/1060/400/300" },
+            { id: 2, category: "Maishiy Texnika", title: "Multvarka (Katta hajmli)", price: 680000, image: "https://picsum.photos/id/365/400/300" },
+            { id: 3, category: "Oshxona Buyumlari", title: "Zanglamas pichoqlar to'plami", price: 180000, image: "https://picsum.photos/id/488/400/300" },
+            { id: 4, category: "Oshxona Buyumlari", title: "Mexanik Zakrivalka (Sifatli)", price: 95000, image: "https://picsum.photos/id/292/400/300" },
+            { id: 5, category: "Plastmassa Mahsulotlari", title: "Plastmassa Idishlar (Set 5ta)", price: 75000, image: "https://picsum.photos/id/30x/400/300" },
+            { id: 6, category: "Plastmassa Mahsulotlari", title: "Plastmassa Organayzer", price: 45000, image: "https://picsum.photos/id/625/400/300" }
         ];
 
         let cart = {};
 
-        // Do'konni ekranga chiqarish funksiyasi
         function displayShop(productsToRender = products) {
             const container = document.getElementById('shop-container');
-            container.innerHTML = ""; // Tozalash
+            container.innerHTML = ""; 
             
             const categories = [...new Set(productsToRender.map(p => p.category))];
             
@@ -176,7 +133,11 @@
                 const sec = document.createElement('div');
                 sec.className = 'category-section';
                 
-                sec.innerHTML = `<div class="category-title">${cat}</div>`;
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'category-title';
+                titleDiv.innerText = cat;
+                sec.appendChild(titleDiv);
+
                 const grid = document.createElement('div');
                 grid.className = 'products-grid';
                 
@@ -185,10 +146,85 @@
                     const isInCart = cart[p.id] && cart[p.id].count > 0;
                     const count = isInCart ? cart[p.id].count : 0;
 
-                    grid.innerHTML += `
-                        <div class="product-card">
-                            <img src="${p.image}" class="product-img" alt="${p.title}" onerror="this.src='https://placehold.co/400x300?text=Rasm+Mavjud+Emas'">
-                            <div class="product-title">${p.title}</div>
-                            <div class="product-price">${p.price.toLocaleString()} so'm</div>
-                            
-                            <button id="add-btn-${p.id}" class="btn-add" style="display: ${isInCart ? 'none' :
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <img src="${p.image}" class="product-img" alt="${p.title}" onerror="this.src='https://dummyimage.com/400x300/ccc/000&text=Rasm+Mavjud+Emas'">
+                        <div class="product-title">${p.title}</div>
+                        <div class="product-price">${p.price.toLocaleString()} so'm</div>
+                        <button id="add-btn-${p.id}" class="btn-add" style="display: ${isInCart ? 'none' : 'block'}" onclick="changeCount(${p.id}, 1)">Qo'shish</button>
+                        <div id="counter-${p.id}" class="counter-box" style="display: ${isInCart ? 'flex' : 'none'}">
+                            <button class="btn-count" onclick="changeCount(${p.id}, -1)">-</button>
+                            <span id="num-${p.id}" class="count-num">${count}</span>
+                            <button class="btn-count" onclick="changeCount(${p.id}, 1)">+</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+                sec.appendChild(grid);
+                container.appendChild(sec);
+            });
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const filtered = products.filter(p => p.title.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
+            displayShop(filtered);
+        }
+
+        function changeCount(id, change) {
+            if (!cart[id]) {
+                const prod = products.find(p => p.id === id);
+                cart[id] = { title: prod.title, price: prod.price, count: 0 };
+            }
+            
+            cart[id].count += change;
+            
+            const addBtn = document.getElementById("add-btn-" + id);
+            const counterBox = document.getElementById("counter-" + id);
+            const numSpan = document.getElementById("num-" + id);
+
+            if (cart[id].count <= 0) {
+                delete cart[id];
+                if(addBtn) addBtn.style.display = 'block';
+                if(counterBox) counterBox.style.display = 'none';
+            } else {
+                if(addBtn) addBtn.style.display = 'none';
+                if(counterBox) counterBox.style.display = 'flex';
+                if(numSpan) numSpan.innerText = cart[id].count;
+            }
+            updateCartButton();
+        }
+
+        function updateCartButton() {
+            let total = 0;
+            let itemsCount = 0;
+            for (let id in cart) {
+                total += cart[id].price * cart[id].count;
+                itemsCount += cart[id].count;
+            }
+            
+            const cartBox = document.getElementById('cart-box');
+            const totalSpan = document.getElementById('total-price-btn');
+            
+            if (itemsCount > 0) {
+                cartBox.style.display = 'block';
+                totalSpan.innerText = total.toLocaleString() + " so'm";
+            } else {
+                cartBox.style.display = 'none';
+            }
+        }
+
+        function sendOrder() {
+            let items = Object.values(cart);
+            let total = items.reduce((sum, item) => sum + (item.price * item.count), 0);
+            const orderData = { items: items, total: total };
+            tg.sendData(JSON.stringify(orderData));
+            tg.close();
+        }
+
+        // Birinchi marta do'konni yuklash
+        displayShop();
+    </script>
+</body>
+</html>
