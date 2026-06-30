@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Do'kon</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            margin: 0; padding: 15px;
+        }
+        h2 { text-align: center; color: var(--tg-theme-button-color, #2481cc); }
+        .product-card {
+            border: 1px solid #e0e0e0; padding: 15px; margin-bottom: 15px; 
+            border-radius: 12px; display: flex; justify-content: space-between; 
+            align-items: center; background: var(--tg-theme-secondary-bg-color, #f9f9f9);
+        }
+        .product-info strong { display: block; font-size: 16px; margin-bottom: 5px; }
+        .product-info span { color: #4caf50; font-weight: bold; }
+        button {
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none; padding: 10px 16px; border-radius: 8px; 
+            cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        button:active { transform: scale(0.95); }
+        .cart-status {
+            position: fixed; bottom: 20px; left: 15px; right: 15px; display: none;
+        }
+        .main-btn { width: 100%; padding: 15px; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+    <h2>?? Bizning Do'kon</h2>
+    <div id="products"></div>
+
+    <div class="cart-status">
+        <button id="main-btn" class="main-btn" onclick="sendOrder()">Buyurtma berish (0 so'm)</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Ilovani to'liq ekranga ochish
+
+        // SIZNING TAVARLARINGIZ RO'YXATI (Shu yerga o'zingiznikini yozasiz)
+        const products = [
+            { id: 1, title: "iPhone 15 Pro", price: 14000000 },
+            { id: 2, title: "AirPods Pro 2", price: 2800000 },
+            { id: 3, title: "MacBook Air M2", price: 13500000 }
+        ];
+
+        let cart = {};
+
+        function displayProducts() {
+            const container = document.getElementById('products');
+            products.forEach(p => {
+                container.innerHTML += `
+                    <div class="product-card">
+                        <div class="product-info">
+                            <strong>${p.title}</strong>
+                            <span>${p.price.toLocaleString()} so'm</span>
+                        </div>
+                        <button onclick="addToCart(${p.id})">Qo'shish</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addToCart(id) {
+            if (cart[id]) {
+                cart[id].count += 1;
+            } else {
+                const prod = products.find(p => p.id === id);
+                cart[id] = { title: prod.title, price: prod.price, count: 1 };
+            }
+            updateCartButton();
+        }
+
+        function updateCartButton() {
+            let total = 0;
+            let itemsCount = 0;
+            for (let id in cart) {
+                total += cart[id].price * cart[id].count;
+                itemsCount += cart[id].count;
+            }
+            
+            const mainBtn = document.getElementById('main-btn');
+            if (itemsCount > 0) {
+                document.querySelector('.cart-status').style.display = 'block';
+                mainBtn.innerText = `?? Buyurtma berish (${total.toLocaleString()} so'm)`;
+            } else {
+                document.querySelector('.cart-status').style.display = 'none';
+            }
+        }
+
+        function sendOrder() {
+            let items = Object.values(cart);
+            let total = items.reduce((sum, item) => sum + (item.price * item.count), 0);
+
+            const orderData = {
+                items: items,
+                total: total
+            };
+
+            // Ma'lumotni Telegram botga yuborish
+            tg.sendData(JSON.stringify(orderData));
+            tg.close();
+        }
+
+        displayProducts();
+    </script>
+</body>
+</html>
