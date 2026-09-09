@@ -1,177 +1,925 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vodiy Savdo</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --main-color: #007aff; 
-            --bg-color: var(--tg-theme-bg-color, #ffffff);
-            --text-color: var(--tg-theme-text-color, #222222);
-            --card-bg: var(--tg-theme-secondary-bg-color, #f2f2f7);
-            --accent-color: #34c759; 
-            --danger-color: #ff3b30;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-color); color: var(--text-color);
-            margin: 0; padding: 16px; padding-bottom: 100px;
-        }
-        .brand-header { text-align: center; margin-bottom: 20px; }
-        .brand-header h2 { font-size: 24px; font-weight: 800; color: var(--main-color); margin: 0; }
-        .brand-header p { margin: 5px 0 0 0; font-size: 13px; opacity: 0.6; }
-        .search-container { margin-bottom: 20px; }
-        .search-input {
-            width: 100%; padding: 12px 16px; border-radius: 12px; border: none; 
-            background: var(--card-bg); color: var(--text-color); font-size: 15px; box-sizing: border-box;
-        }
-        .category-section { margin-bottom: 25px; }
-        .category-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .category-title::before { content: ''; display: inline-block; width: 4px; height: 18px; background: var(--main-color); border-radius: 4px; }
-        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .product-card { background: var(--card-bg); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
-        .product-img { width: 100%; height: 110px; object-fit: cover; border-radius: 12px; margin-bottom: 10px; }
-        .product-title { font-size: 14px; font-weight: 600; line-height: 1.3; margin-bottom: 4px; height: 36px; overflow: hidden; }
-        .product-stock { font-size: 12px; opacity: 0.7; margin-bottom: 6px; }
-        .product-stock.out { color: var(--danger-color); font-weight: 600; }
-        .product-price { color: var(--accent-color); font-weight: 700; font-size: 15px; margin-bottom: 12px; }
-        .btn-add { background-color: var(--main-color); color: #fff; border: none; width: 100%; padding: 10px 0; border-radius: 10px; font-weight: 600; cursor: pointer; }
-        .btn-add:disabled { background-color: #8e8e93; cursor: not-allowed; }
-        .counter-box { display: flex; justify-content: space-between; align-items: center; display: none; }
-        .btn-count { background: #ffffff; color: var(--main-color); border: 1px solid #e5e5ea; width: 34px; height: 34px; font-size: 20px; font-weight: 600; border-radius: 10px; cursor: pointer; }
-        .cart-status { position: fixed; bottom: 20px; left: 16px; right: 16px; background: var(--main-color); border-radius: 16px; display: none; }
-        .main-btn { width: 100%; background: none; border: none; color: #fff; padding: 16px; font-size: 16px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Pul yeg'ish</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+window.onerror = function(msg, url, line, col, error){
+  var app = document.getElementById('app');
+  if(app){
+    app.innerHTML = '<div style="padding:20px;color:#E2685A;font-family:monospace;font-size:13px;white-space:pre-wrap;">Xatolik chiqdi:\n\n' + msg + '\n\nQator: ' + line + '</div>';
+  }
+};
+</script>
+<style>
+  :root{
+    --bg:#16181C;
+    --surface:#1E2126;
+    --surface-2:#282C33;
+    --ink:#F3F4F6;
+    --ink-soft:#A6ACB6;
+    --gold:#E0B268;
+    --gold-soft:rgba(224,178,104,0.16);
+    --paid:#5BCB98;
+    --paid-soft:rgba(91,203,152,0.16);
+    --pending:#EA7767;
+    --pending-soft:rgba(234,119,103,0.16);
+    --border:#2E323A;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.45;
+    position:relative;
+    overflow-x:hidden;
+  }
+  .orb{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(70px);
+    pointer-events:none;
+    z-index:0;
+  }
+  .orb-1{width:280px;height:280px;background:var(--gold);opacity:0.30;top:-90px;left:-70px;}
+  .orb-2{width:240px;height:240px;background:var(--paid);opacity:0.24;bottom:6%;right:-80px;}
+  .orb-3{width:220px;height:220px;background:var(--pending);opacity:0.16;top:38%;left:55%;}
+  @keyframes float1{ 0%,100%{ transform:translate(0,0); } 50%{ transform:translate(18px,26px); } }
+  @keyframes float2{ 0%,100%{ transform:translate(0,0); } 50%{ transform:translate(-22px,-16px); } }
+  @keyframes float3{ 0%,100%{ transform:translate(0,0); } 50%{ transform:translate(14px,-20px); } }
+  .orb-1{ animation:float1 11s ease-in-out infinite; }
+  .orb-2{ animation:float2 13s ease-in-out infinite; }
+  .orb-3{ animation:float3 9s ease-in-out infinite; }
+  .app{
+    width:100%;
+    max-width:460px;
+    min-height:100vh;
+    background:transparent;
+    display:flex;
+    flex-direction:column;
+    padding:26px 18px 40px;
+    position:relative;
+    z-index:1;
+  }
+
+  header{margin-bottom:20px;position:relative;}
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:32px;
+    margin:0 0 6px;
+    letter-spacing:-0.015em;
+    background:linear-gradient(100deg, var(--gold) 0%, #F0D9A8 35%, var(--paid) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .subtitle{color:var(--ink-soft);font-size:14.5px;margin:0;font-variant-numeric:tabular-nums;line-height:1.5;}
+  .header-links{display:flex;gap:10px;margin-top:12px;}
+  .icon-btn{
+    display:flex;align-items:center;justify-content:center;
+    width:40px;height:40px;border-radius:12px;flex-shrink:0;
+    border:1px solid rgba(255,255,255,0.08);
+    background:rgba(30,33,38,0.55);
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+    color:var(--ink-soft);cursor:pointer;
+  }
+  .icon-btn svg{width:19px;height:19px;}
+  .icon-btn.on{
+    color:var(--gold);border-color:rgba(224,178,104,0.4);background:var(--gold-soft);
+  }
+  .icon-btn:active{transform:scale(0.94);}
+  .link-btn{
+    border:none;background:none;color:var(--ink-soft);font-size:13px;
+    text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0;
+  }
+
+  .tabs-row{
+    display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch;
+  }
+  .tabs-row::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    flex-shrink:0;border:1px solid rgba(255,255,255,0.08);background:rgba(30,33,38,0.55);
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--ink-soft);
+    font-size:14px;font-weight:600;padding:9px 16px;border-radius:999px;cursor:pointer;
+    white-space:nowrap;font-variant-numeric:tabular-nums;
+  }
+  .tab-btn.active{background:var(--gold);color:#231A0B;border-color:var(--gold);box-shadow:0 4px 14px rgba(224,178,104,0.3);}
+  .tab-btn.add-tab{background:transparent;color:var(--gold);border:1px dashed var(--gold);}
+
+  .card{
+    background:rgba(30,33,38,0.55);
+    -webkit-backdrop-filter:blur(20px);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:20px;
+    padding:18px;
+    margin-bottom:14px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.05) inset,
+      0 14px 34px rgba(0,0,0,0.35);
+    position:relative;
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:0;left:18px;right:18px;height:1px;
+    background:linear-gradient(90deg, transparent, rgba(224,178,104,0.5), transparent);
+  }
+
+  .target-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .target-label{font-size:13px;color:var(--ink-soft);}
+  .target-value{
+    font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--gold);
+    display:flex;align-items:baseline;gap:4px;font-variant-numeric:tabular-nums;
+  }
+  .target-value input{
+    font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--gold);
+    border:none;background:transparent;width:130px;text-align:right;outline:none;
+    border-bottom:1px solid var(--gold);
+  }
+  .btn-row{display:flex;gap:8px;}
+  .edit-btn{
+    border:none;background:var(--gold-soft);color:var(--gold);font-size:13px;font-weight:600;
+    padding:7px 12px;border-radius:8px;cursor:pointer;
+  }
+  .remove-campaign-btn{
+    border:none;background:var(--pending-soft);color:var(--pending);font-size:13px;font-weight:600;
+    padding:7px 12px;border-radius:8px;cursor:pointer;
+  }
+  .edit-btn:active,.remove-campaign-btn:active{opacity:0.7;}
+
+  .progress-card{padding:18px;}
+  .progress-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+  .progress-sum{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;}
+  .progress-sum .of{font-size:13px;color:var(--ink-soft);font-weight:400;font-family:'Inter',sans-serif;}
+  .progress-people{font-size:13px;color:var(--ink-soft);}
+  .bar{height:8px;background:var(--surface-2);border-radius:5px;overflow:hidden;}
+  .bar-fill{
+    height:100%;background:linear-gradient(90deg,#3AA476,var(--paid));border-radius:5px;
+    transition:width 0.4s ease;box-shadow:0 0 10px rgba(91,203,152,0.45);
+  }
+
+  .report-row{
+    display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);
+  }
+  .report-row:last-of-type{border-bottom:none;}
+  .report-row .rname{font-weight:600;font-size:14px;}
+  .report-row .rsub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .report-row .rval{font-family:'Fraunces',serif;font-size:15px;color:var(--gold);font-variant-numeric:tabular-nums;}
+  .report-total{
+    display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;margin-top:2px;
+  }
+  .report-total .label{font-weight:700;font-size:15px;}
+  .report-total .value{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--paid);font-variant-numeric:tabular-nums;}
+  .report-total .value .of{font-size:13px;color:var(--ink-soft);font-weight:400;font-family:'Inter',sans-serif;}
+
+  .search-wrap{margin-bottom:10px;}
+  .search-input{
+    width:100%;border:1px solid rgba(255,255,255,0.08);background:rgba(30,33,38,0.5);
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-radius:12px;
+    padding:12px 14px;font-size:14px;font-family:'Inter',sans-serif;outline:none;color:var(--ink);
+  }
+  .search-input::placeholder{color:var(--ink-soft);}
+  .search-input:focus{border-color:var(--gold);}
+
+  .list-label{font-size:13px;color:var(--ink-soft);margin:8px 2px 10px;display:flex;justify-content:space-between;align-items:center;}
+  .add-person-toggle{
+    border:none;background:none;color:var(--gold);font-size:13px;font-weight:600;cursor:pointer;padding:0;
+  }
+
+  .person{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:14px 4px;border-bottom:1px solid var(--border);
+  }
+  .person-left{display:flex;align-items:center;gap:11px;min-width:0;}
+  .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--pending);}
+  .dot.paid{background:var(--paid);}
+  .person-name{font-size:15.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .status-btn{
+    border:none;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;
+    white-space:nowrap;flex-shrink:0;
+  }
+  .status-btn.pending{background:var(--pending-soft);color:var(--pending);}
+  .status-btn.paid{background:var(--paid-soft);color:var(--paid);}
+  .status-btn:active{opacity:0.7;}
+  .delete-btn{
+    border:none;background:none;color:var(--ink-soft);font-size:19px;cursor:pointer;
+    padding:0 0 0 8px;line-height:1;flex-shrink:0;
+  }
+
+  .icon-btn.small{
+    width:32px;height:32px;border-radius:9px;margin-left:6px;background:transparent;
+    border:none;color:var(--ink-soft);
+  }
+  .icon-btn.small svg{width:16px;height:16px;}
+  .edit-name-input{
+    flex:1;border:none;border-bottom:1.5px solid var(--gold);background:transparent;
+    color:var(--ink);font-size:15.5px;font-weight:500;padding:4px 2px;outline:none;
+    font-family:'Inter',sans-serif;
+  }
+
+  .notepad-textarea{
+    width:100%;min-height:96px;border:1px solid rgba(255,255,255,0.08);
+    background:rgba(0,0,0,0.15);border-radius:12px;padding:12px 13px;
+    font-size:14px;font-family:'Inter',sans-serif;color:var(--ink);outline:none;
+    resize:vertical;line-height:1.5;
+  }
+  .notepad-textarea::placeholder{color:var(--ink-soft);}
+  .notepad-label{font-size:13px;color:var(--ink-soft);margin-bottom:8px;}
+
+  .empty{text-align:center;color:var(--ink-soft);font-size:14px;padding:28px 10px;}
+
+  .add-campaign-form{display:flex;gap:8px;margin-bottom:14px;}
+  .add-campaign-form input{
+    flex:1;border:1px solid var(--gold);background:var(--surface);border-radius:12px;
+    padding:10px 12px;font-size:14px;outline:none;color:var(--ink);
+  }
+  .add-campaign-form button{
+    border:none;background:var(--gold);color:#231A0B;font-size:13px;font-weight:700;
+    padding:0 16px;border-radius:12px;cursor:pointer;box-shadow:0 4px 14px rgba(224,178,104,0.3);
+  }
+
+  .add-person-form{display:flex;gap:8px;margin-bottom:14px;}
+  .add-person-form input{
+    flex:1;border:1px solid var(--gold);background:var(--surface);border-radius:12px;
+    padding:11px 13px;font-size:14.5px;outline:none;color:var(--ink);
+  }
+  .add-person-form button{
+    border:none;background:var(--gold);color:#231A0B;font-size:13px;font-weight:700;
+    padding:0 16px;border-radius:12px;cursor:pointer;box-shadow:0 4px 14px rgba(224,178,104,0.3);
+  }
+
+  .confetti-piece{
+    position:fixed;top:-14px;width:8px;height:14px;z-index:9999;border-radius:2px;
+    animation:confettiFall 2.3s ease-in forwards;pointer-events:none;
+  }
+  @keyframes confettiFall{
+    to{ transform:translateY(112vh) rotate(400deg); opacity:0.25; }
+  }
+
+  .loading{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:90px 0;color:var(--ink-soft);font-size:14px;
+  }
+  .spinner{
+    width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--gold);
+    border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:14px;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  @keyframes fadeIn{
+    from{ opacity:0; transform:translateY(5px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .person{ animation:fadeIn 0.22s ease; }
+
+  @keyframes pop{
+    0%{ transform:scale(0.55); }
+    60%{ transform:scale(1.18); }
+    100%{ transform:scale(1); }
+  }
+  .dot.paid{ animation:pop 0.3s ease; }
+  .status-btn.paid{ animation:pop 0.22s ease; }
+
+  .tab-btn, .status-btn, .link-btn, .add-person-toggle, .edit-btn, .remove-campaign-btn, .delete-btn{
+    transition:transform 0.12s ease, opacity 0.12s ease;
+  }
+  .tab-btn:active, .status-btn:active, .edit-btn:active, .remove-campaign-btn:active{
+    transform:scale(0.96);
+  }
+</style>
 </head>
 <body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="app" id="app">
+  <div class="loading" id="loading"><div class="spinner"></div>Yuklanmoqda...</div>
+</div>
 
-    <div class="brand-header">
-        <h2>VODIY SAVDO</h2>
-        <p>Sifatli uy ro'zg'or buyumlari va ulgurji narxlar</p>
+<script>
+const STORAGE_KEY = 'yigim-data';
+
+const DEFAULT_NAMES = [
+  "Mavzunaxon","Solihabonu","Qudratjon","Muxarramoy","Fayzulloh","Gulira'no",
+  "Maxfiratoy","Mavludaxon","Farzonaxon","Muhammadali","Nafisaxon","Barhayotjon",
+  "Zilolaxon","Rayhona","Zilolaxon","Mohinur","Kumushbibi","Robiyaxon","Mohlaroy",
+  "Muhammaddiyor","Mubinaxon","Abubakr","Saidolimxon","Abdulbori","Abduqahhor",
+  "Abdusalom","Abdurahmon","Bibisora","Muhammadsaid","Oyazimxon","Muslimaxon",
+  "Zuhriddin","Solihabonu","Muazina","Muhammadaziz"
+];
+
+let data = null;
+let loaded = false;
+let searchQuery = '';
+let showAddCampaignForm = false;
+let showAddPersonForm = false;
+let showNotepad = false;
+let notesSaveTimer = null;
+let editingTarget = false;
+let editingPersonId = null;
+let showStats = false;
+
+const inTelegram = !!(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.CloudStorage);
+if(window.Telegram && window.Telegram.WebApp){
+  window.Telegram.WebApp.ready();
+  window.Telegram.WebApp.expand();
+  try{ window.Telegram.WebApp.setHeaderColor('#15171B'); }catch(e){}
+  try{ window.Telegram.WebApp.setBackgroundColor('#15171B'); }catch(e){}
+}
+
+function haptic(kind){
+  try{
+    const hf = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback;
+    if(!hf) return;
+    if(kind === 'success' || kind === 'warning' || kind === 'error') hf.notificationOccurred(kind);
+    else hf.impactOccurred(kind || 'light');
+  }catch(e){}
+}
+
+function formatSum(n){
+  return Number(n || 0).toLocaleString('ru-RU').replace(/,/g,' ') + " so'm";
+}
+
+function defaultData(){
+  const campaignId = 'c1';
+  const people = DEFAULT_NAMES.map((name, i) => ({ id: 'p' + i, name: name }));
+  return {
+    campaigns: [{ id: campaignId, amount: 50000 }],
+    activeCampaignId: campaignId,
+    people: people,
+    payments: { [campaignId]: {} },
+    notes: ''
+  };
+}
+
+// Eski (bitta to'lov turli) formatdagi ma'lumotni yangi (bir nechta tur) formatga o'tkazish
+function migrate(old){
+  if(old && old.campaigns){
+    if(typeof old.notes !== 'string') old.notes = '';
+    return old;
+  }
+  if(old && old.people){
+    const campaignId = 'c1';
+    const payments = { [campaignId]: {} };
+    (old.people || []).forEach(p => {
+      if(p.paid) payments[campaignId][p.id] = true;
+    });
+    return {
+      campaigns: [{ id: campaignId, amount: old.target || 0 }],
+      activeCampaignId: campaignId,
+      people: (old.people || []).map(p => ({ id: p.id, name: p.name })),
+      payments: payments,
+      notes: ''
+    };
+  }
+  return defaultData();
+}
+
+function tgGet(key){
+  return new Promise((resolve) => {
+    window.Telegram.WebApp.CloudStorage.getItem(key, (err, value) => {
+      resolve(err ? null : value);
+    });
+  });
+}
+function tgSet(key, value){
+  return new Promise((resolve) => {
+    window.Telegram.WebApp.CloudStorage.setItem(key, value, () => resolve());
+  });
+}
+function timeoutP(ms){
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function loadData(){
+  const forceReset = new URLSearchParams(window.location.search).has('reset');
+  let loadedRaw = null;
+  try{
+    if(!forceReset){
+      if(inTelegram){
+        await Promise.race([
+          (async () => { loadedRaw = await tgGet(STORAGE_KEY); })(),
+          timeoutP(4000)
+        ]);
+      } else if(window.storage){
+        const res = await window.storage.get(STORAGE_KEY, false);
+        if(res && res.value) loadedRaw = res.value;
+      }
+    }
+  }catch(e){ /* birinchi marta ishlatilmoqda */ }
+
+  if(loadedRaw){
+    try{ data = migrate(JSON.parse(loadedRaw)); }
+    catch(e){ data = defaultData(); }
+  } else {
+    data = defaultData();
+  }
+
+  loaded = true;
+  render();
+  if(forceReset){ saveData(); }
+}
+
+async function saveData(){
+  try{
+    const json = JSON.stringify(data);
+    if(inTelegram){
+      await tgSet(STORAGE_KEY, json);
+    } else if(window.storage){
+      await window.storage.set(STORAGE_KEY, json, false);
+    }
+  }catch(e){ console.error('Saqlashda xatolik', e); }
+}
+
+function getActiveCampaign(){
+  return data.campaigns.find(c => c.id === data.activeCampaignId) || data.campaigns[0];
+}
+
+function switchCampaign(id){
+  haptic('light');
+  data.activeCampaignId = id;
+  editingTarget = false;
+  render();
+}
+
+function toggleAddCampaignForm(){
+  haptic('light');
+  showAddCampaignForm = !showAddCampaignForm;
+  render();
+}
+
+function addCampaign(amountStr){
+  const amount = parseInt(amountStr, 10);
+  if(isNaN(amount) || amount <= 0) return;
+  haptic('success');
+  const id = 'c' + Date.now().toString(36);
+  data.campaigns.push({ id, amount });
+  data.payments[id] = {};
+  data.activeCampaignId = id;
+  showAddCampaignForm = false;
+  saveData();
+  render();
+}
+
+function removeCampaign(id){
+  if(data.campaigns.length <= 1){
+    haptic('error');
+    alert("Kamida bitta to'lov turi qolishi kerak.");
+    return;
+  }
+  const c = data.campaigns.find(c => c.id === id);
+  if(!confirm((c ? formatSum(c.amount) : 'Bu') + " to'lov turi butunlay o'chirilsinmi? Unga tegishli barcha belgilashlar yo'qoladi.")) return;
+  haptic('warning');
+  data.campaigns = data.campaigns.filter(c => c.id !== id);
+  delete data.payments[id];
+  if(data.activeCampaignId === id){
+    data.activeCampaignId = data.campaigns[0].id;
+  }
+  saveData();
+  render();
+}
+
+function setTarget(val){
+  const n = parseInt(val, 10);
+  const c = getActiveCampaign();
+  c.amount = isNaN(n) || n < 0 ? 0 : n;
+  saveData();
+  editingTarget = false;
+  render();
+}
+function startEditTarget(){ editingTarget = true; render(); }
+function confirmTarget(){
+  const input = document.getElementById('targetInput');
+  setTarget(input.value);
+}
+
+function toggleNotepad(){
+  haptic('light');
+  showNotepad = !showNotepad;
+  render();
+}
+
+function onNotesInput(val){
+  data.notes = val;
+  if(notesSaveTimer) clearTimeout(notesSaveTimer);
+  notesSaveTimer = setTimeout(() => { saveData(); }, 700);
+}
+
+function toggleAddPersonForm(){
+  showAddPersonForm = !showAddPersonForm;
+  render();
+}
+
+function addPerson(name){
+  const trimmed = name.trim();
+  if(!trimmed) return;
+  haptic('success');
+  const id = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+  data.people.push({ id, name: trimmed });
+  saveData();
+  render();
+}
+
+function deletePerson(id){
+  const p = data.people.find(p => p.id === id);
+  const name = p ? p.name : "bu odam";
+  if(!confirm(name + " ro'yxatdan rostan ham o'chirilsinmi?")) return;
+  haptic('warning');
+  data.people = data.people.filter(p => p.id !== id);
+  Object.keys(data.payments).forEach(cid => { delete data.payments[cid][id]; });
+  saveData();
+  render();
+}
+
+function togglePaid(personId){
+  const cid = data.activeCampaignId;
+  if(!data.payments[cid]) data.payments[cid] = {};
+  if(data.payments[cid][personId]){
+    delete data.payments[cid][personId];
+    haptic('light');
+  } else {
+    data.payments[cid][personId] = true;
+    haptic('success');
+  }
+  saveData();
+  render();
+
+  const total = data.people.length;
+  const paidSetNow = data.payments[cid] || {};
+  const paidCountNow = data.people.filter(p => paidSetNow[p.id]).length;
+  if(total > 0 && paidCountNow === total){
+    launchConfetti();
+  }
+}
+
+function launchConfetti(){
+  haptic('success');
+  const colors = ['#E0B268','#5BCB98','#EA7767','#F3F4F6'];
+  for(let i = 0; i < 40; i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = (Math.random() * 100) + 'vw';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.animationDelay = (Math.random() * 0.35) + 's';
+    el.style.transform = 'rotate(' + Math.floor(Math.random() * 360) + 'deg)';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2700);
+  }
+}
+
+function shareUnpaid(){
+  haptic('light');
+  const active = getActiveCampaign();
+  const paidSet = data.payments[active.id] || {};
+  const unpaid = data.people.filter(p => !paidSet[p.id]);
+  let text;
+  if(unpaid.length === 0){
+    text = `${formatSum(active.amount)} bo'yicha: hammasi to'lagan! 🎉`;
+  } else {
+    text = `${formatSum(active.amount)} bo'yicha hali to'lamaganlar (${unpaid.length} kishi):\n`;
+    text += unpaid.map((p, i) => `${i + 1}. ${p.name}`).join('\n');
+  }
+  const shareUrl = 'https://t.me/share/url?url=&text=' + encodeURIComponent(text);
+  try{
+    if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink){
+      window.Telegram.WebApp.openTelegramLink(shareUrl);
+    } else if(navigator.share){
+      navigator.share({ text: text });
+    } else {
+      window.open(shareUrl, '_blank');
+    }
+  }catch(e){
+    try{
+      navigator.clipboard.writeText(text);
+      alert("Matn nusxalandi, uni Telegram'ga joylashtiring.");
+    }catch(e2){ /* ignore */ }
+  }
+}
+
+function toggleStats(){
+  haptic('light');
+  showStats = !showStats;
+  render();
+}
+
+function resetToDefaults(){
+  if(!confirm("Hammasi asl holatga qaytarilsinmi? Barcha to'lov turlari, belgilashlar va qo'shimcha odamlar yo'qoladi.")) return;
+  haptic('warning');
+  data = defaultData();
+  saveData();
+  render();
+}
+
+function onSearchInput(val){
+  searchQuery = val;
+  renderPeopleListOnly();
+}
+
+function computeTotalDebt(personId){
+  let debt = 0;
+  data.campaigns.forEach(c => {
+    const isPaid = data.payments[c.id] && data.payments[c.id][personId];
+    if(!isPaid) debt += c.amount;
+  });
+  return debt;
+}
+
+function getFilteredPeople(){
+  const active = getActiveCampaign();
+  const paidSet = data.payments[active.id] || {};
+  const q = searchQuery.trim().toLowerCase();
+  let filtered = q
+    ? data.people.filter(p => p.name.toLowerCase().includes(q))
+    : data.people.slice();
+  filtered = filtered
+    .map((p, idx) => ({ p, idx, paid: !!paidSet[p.id], debt: computeTotalDebt(p.id) }))
+    .sort((a, b) => {
+      if(a.paid !== b.paid) return a.paid ? 1 : -1;
+      if(!a.paid) return b.debt - a.debt;
+      return a.idx - b.idx;
+    })
+    .map(x => x.p);
+  return { filtered, paidSet };
+}
+
+function startEditPerson(id){
+  editingPersonId = id;
+  render();
+}
+
+function cancelEditPerson(){
+  editingPersonId = null;
+  render();
+}
+
+function renamePerson(id){
+  const input = document.getElementById('editNameInput-' + id);
+  if(!input) return;
+  const trimmed = input.value.trim();
+  if(trimmed){
+    const p = data.people.find(p => p.id === id);
+    if(p) p.name = trimmed;
+    saveData();
+  }
+  editingPersonId = null;
+  render();
+}
+
+function buildPeopleHtml(){
+  const { filtered, paidSet } = getFilteredPeople();
+  if(data.people.length === 0){
+    return '<div class="empty">Hali odam qo\'shilmagan.<br>Pastda "+ Odam qo\'shish" tugmasini bosing.</div>';
+  }
+  if(filtered.length === 0){
+    return '<div class="empty">Hech kim topilmadi.</div>';
+  }
+  return filtered.map(p => {
+    const isPaid = !!paidSet[p.id];
+    if(editingPersonId === p.id){
+      return `
+        <div class="person">
+          <input id="editNameInput-${p.id}" class="edit-name-input" type="text" value="${escapeHtml(p.name)}" maxlength="40">
+          <div style="display:flex;align-items:center;">
+            <button class="icon-btn small" onclick="renamePerson('${p.id}')" aria-label="Saqlash">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </button>
+            <button class="icon-btn small" onclick="cancelEditPerson()" aria-label="Bekor qilish">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+    return `
+      <div class="person">
+        <div class="person-left">
+          <span class="dot ${isPaid ? 'paid' : ''}"></span>
+          <span class="person-name">${escapeHtml(p.name)}</span>
+        </div>
+        <div style="display:flex;align-items:center;">
+          <button class="status-btn ${isPaid ? 'paid' : 'pending'}" onclick="togglePaid('${p.id}')">${isPaid ? "✓ To'ladi" : "To'lamadi"}</button>
+          <button class="icon-btn small" onclick="startEditPerson('${p.id}')" aria-label="Tahrirlash">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </button>
+          <button class="delete-btn" onclick="deletePerson('${p.id}')" aria-label="O'chirish">×</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Qidiruv paytida faqat ro'yxatni yangilaydi, klaviatura yopilib qolmasligi uchun
+// butun sahifani qayta chizmaydi (qidiruv maydonining o'zi qayta yaratilmaydi).
+function renderPeopleListOnly(){
+  const listEl = document.getElementById('peopleList');
+  const countEl = document.getElementById('listCount');
+  if(!listEl || !data) return;
+  listEl.innerHTML = buildPeopleHtml();
+  if(countEl){
+    const { filtered } = getFilteredPeople();
+    countEl.textContent = filtered.length + '/' + data.people.length;
+  }
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function render(){
+  const app = document.getElementById('app');
+  if(!loaded || !data){
+    app.innerHTML = '<div class="loading"><div class="spinner"></div>Yuklanmoqda...</div>';
+    return;
+  }
+
+  const active = getActiveCampaign();
+  const cid = active.id;
+  const paidSet = data.payments[cid] || {};
+  const total = data.people.length;
+  const paidCount = data.people.filter(p => paidSet[p.id]).length;
+  const collected = paidCount * active.amount;
+  const targetSum = total * active.amount;
+  const pct = targetSum > 0 ? Math.min(100, Math.round((collected/targetSum)*100)) : 0;
+
+  const tabsHtml = data.campaigns.map(c => `
+    <button class="tab-btn ${c.id === cid ? 'active' : ''}" onclick="switchCampaign('${c.id}')">${formatSum(c.amount)}</button>
+  `).join('') + `<button class="tab-btn add-tab" onclick="toggleAddCampaignForm()">+ Yangi tur</button>`;
+
+  let grandCollected = 0, grandTarget = 0;
+  const statsRows = data.campaigns.map(c => {
+    const set = data.payments[c.id] || {};
+    const paid = data.people.filter(p => set[p.id]).length;
+    const col = paid * c.amount;
+    const tgt = data.people.length * c.amount;
+    grandCollected += col;
+    grandTarget += tgt;
+    return `
+      <div class="report-row">
+        <div>
+          <div class="rname">${formatSum(c.amount)}</div>
+          <div class="rsub">${paid}/${data.people.length} kishi to'ladi</div>
+        </div>
+        <div class="rval">${formatSum(col)}</div>
+      </div>
+    `;
+  }).join('');
+
+  const statsHtml = showStats ? `
+    <div class="card">
+      <div style="font-size:13px;color:var(--ink-soft);margin-bottom:6px;">Barcha turlar bo'yicha hisobot</div>
+      ${statsRows}
+      <div class="report-total">
+        <div class="label">Jami yig'ildi</div>
+        <div class="value">${formatSum(grandCollected)} <span class="of">/ ${formatSum(grandTarget)}</span></div>
+      </div>
     </div>
+  ` : '';
 
-    <div class="search-container">
-        <input type="text" id="search-bar" class="search-input" placeholder="Mahsulot qidirish..." oninput="filterProducts()">
+  const addCampaignFormHtml = showAddCampaignForm ? `
+    <div class="add-campaign-form">
+      <input id="newCampaignAmount" type="number" inputmode="numeric" placeholder="Masalan: 50000">
+      <button onclick="addCampaign(document.getElementById('newCampaignAmount').value)">Qo'shish</button>
     </div>
+  ` : '';
 
-    <div id="shop-container"></div>
+  const addPersonFormHtml = showAddPersonForm ? `
+    <div class="add-person-form">
+      <input id="newPersonName" type="text" placeholder="Ism kiriting..." maxlength="40">
+      <button onclick="submitNewPerson()">Qo'shish</button>
+    </div>
+  ` : '';
 
-    <div class="cart-status" id="cart-box">
-        <button class="main-btn" onclick="getGeoAndSend()">
-            <span>🛒 Buyurtmani tasdiqlash</span>
-            <span id="total-price-btn">0 so'm</span>
+  const targetHtml = editingTarget
+    ? `<div class="target-value"><input id="targetInput" type="number" inputmode="numeric" value="${active.amount}" autofocus></div>
+       <div class="btn-row"><button class="edit-btn" onclick="confirmTarget()">Saqlash</button></div>`
+    : `<div class="target-value">${formatSum(active.amount)}</div>
+       <div class="btn-row">
+         <button class="edit-btn" onclick="startEditTarget()">O'zgartirish</button>
+         <button class="remove-campaign-btn" onclick="removeCampaign('${cid}')">O'chirish</button>
+       </div>`;
+
+  const { filtered: filteredPeople } = getFilteredPeople();
+  const peopleHtml = buildPeopleHtml();
+
+  app.innerHTML = `
+    <header>
+      <h1>Pul yeg'ish</h1>
+      <p class="subtitle">${total} kishi ro'yxatda &middot; ${paidCount} tasi to'ladi (${formatSum(active.amount)} bo'yicha)</p>
+      <div class="header-links">
+        <button class="icon-btn ${showStats ? 'on' : ''}" onclick="toggleStats()" title="Umumiy hisobot" aria-label="Umumiy hisobot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
         </button>
+        <button class="icon-btn ${showNotepad ? 'on' : ''}" onclick="toggleNotepad()" title="Bloknot" aria-label="Bloknot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/><path d="M9 13h6M9 17h6"/></svg>
+        </button>
+        <button class="icon-btn" onclick="shareUnpaid()" title="To'lamaganlarni ulashish" aria-label="Ulashish">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14"/></svg>
+        </button>
+        <button class="icon-btn" onclick="resetToDefaults()" title="Asl holatga qaytarish" aria-label="Asl holatga qaytarish">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
+        </button>
+      </div>
+    </header>
+
+    ${showNotepad ? `
+      <div class="card">
+        <div class="notepad-label">Bloknot</div>
+        <textarea class="notepad-textarea" placeholder="Eslatmalar yozing..." oninput="onNotesInput(this.value)">${escapeHtml(data.notes || '')}</textarea>
+      </div>
+    ` : ''}
+
+    ${statsHtml}
+
+    <div class="tabs-row">${tabsHtml}</div>
+    ${addCampaignFormHtml}
+
+    <div class="card">
+      <div class="target-row">
+        <div class="target-label">Ushbu tur bo'yicha yig'iladigan summa</div>
+      </div>
+      <div class="target-row" style="margin-top:8px;">${targetHtml}</div>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+    <div class="card progress-card">
+      <div class="progress-top">
+        <div class="progress-sum">${formatSum(collected)} <span class="of">/ ${formatSum(targetSum)}</span></div>
+        <div class="progress-people">${pct}%</div>
+      </div>
+      <div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div>
+    </div>
 
-        // 🛍️ O'ZINGIZNING TOVARLARINGIZNI SHU YERGA YOZASIZ
-        // ID raqamlarini ketma-ket (1, 2, 3...) qilib kiriting. 
-        // Rasmlarga internetdagi ochiq rasmlar linkini yoki dummy link qo'yishingiz mumkin.
-        let products = [
-            { id: 1, category: "Maishiy Texnika", title: "Elektr Mikser", price: 250000, stock: 45, image: "https://picsum.photos/id/1060/400/300" },
-            { id: 2, category: "Oshxona Buyumlari", title: "Zakrivalka", price: 95000, stock: 120, image: "https://picsum.photos/id/292/400/300" },
-            { id: 3, category: "Plastmassa", title: "Plastmassa Idishlar To'plami", price: 75000, stock: 15, image: "https://picsum.photos/id/30/400/300" }
-        ];
+    <div class="search-wrap">
+      <input class="search-input" type="text" placeholder="Ism bo'yicha qidirish..." value="${escapeHtml(searchQuery)}" oninput="onSearchInput(this.value)">
+    </div>
 
-        let cart = {};
+    <div class="list-label">
+      <span>Odamlar ro'yxati &middot; <span id="listCount">${filteredPeople.length}/${total}</span></span>
+      <button class="add-person-toggle" onclick="toggleAddPersonForm()">${showAddPersonForm ? 'Bekor qilish' : '+ Odam qo\'shish'}</button>
+    </div>
+    ${addPersonFormHtml}
+    <div id="peopleList">${peopleHtml}</div>
+  `;
 
-        function displayShop(productsToRender = products) {
-            const container = document.getElementById('shop-container');
-            container.innerHTML = ""; 
-            const categories = [...new Set(productsToRender.map(p => p.category))];
-            
-            if(categories.length === 0) {
-                container.innerHTML = "<p style='text-align:center; opacity:0.5; margin-top:40px;'>Mahsulot topilmadi 😔</p>";
-                return;
-            }
+  if(editingTarget){
+    const input = document.getElementById('targetInput');
+    input.addEventListener('keydown', (e) => { if(e.key === 'Enter') confirmTarget(); });
+  }
+  if(showAddCampaignForm){
+    const input = document.getElementById('newCampaignAmount');
+    if(input){
+      input.focus();
+      input.addEventListener('keydown', (e) => { if(e.key === 'Enter') addCampaign(input.value); });
+    }
+  }
+  if(showAddPersonForm){
+    const input = document.getElementById('newPersonName');
+    if(input){
+      input.focus();
+      input.addEventListener('keydown', (e) => { if(e.key === 'Enter') submitNewPerson(); });
+    }
+  }
+  if(editingPersonId){
+    const input = document.getElementById('editNameInput-' + editingPersonId);
+    if(input){
+      input.focus();
+      input.select();
+      input.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter') renamePerson(editingPersonId);
+        if(e.key === 'Escape') cancelEditPerson();
+      });
+    }
+  }
+  if(showNotepad){
+    const ta = document.querySelector('.notepad-textarea');
+    if(ta) ta.focus();
+  }
+}
 
-            categories.forEach(cat => {
-                const sec = document.createElement('div');
-                sec.className = 'category-section';
-                sec.innerHTML = `<div class="category-title">${cat}</div>`;
-                const grid = document.createElement('div');
-                grid.className = 'products-grid';
-                
-                productsToRender.filter(p => p.category === cat).forEach(p => {
-                    const isInCart = cart[p.id] && cart[p.id].count > 0;
-                    const currentCount = isInCart ? cart[p.id].count : 0;
-                    const isMaksimum = currentCount >= p.stock;
+function submitNewPerson(){
+  const input = document.getElementById('newPersonName');
+  if(!input) return;
+  const val = input.value;
+  addPerson(val);
+}
 
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    
-                    let stockHTML = p.stock > 0 ? `<div class="product-stock">Qoldiq: ${p.stock} ta</div>` : `<div class="product-stock out" style="color:var(--danger-color); font-weight:600;">Qoldiq tugagan</div>`;
-
-                    card.innerHTML = `
-                        <img src="${p.image}" class="product-img" alt="${p.title}" onerror="this.src='https://dummyimage.com/400x300/ccc/000&text=Rasm'">
-                        <div class="product-title">${p.title}</div>
-                        ${stockHTML}
-                        <div class="product-price">${p.price.toLocaleString()} so'm</div>
-                        <button id="add-btn-${p.id}" class="btn-add" style="display: ${isInCart ? 'none' : 'block'}" ${p.stock <= 0 ? 'disabled' : ''} onclick="changeCount(${p.id}, 1)">${p.stock > 0 ? 'Qo\'shish' : 'Sotuvda yo\'q'}</button>
-                        <div id="counter-${p.id}" class="counter-box" style="display: ${isInCart ? 'flex' : 'none'}">
-                            <button class="btn-count" onclick="changeCount(${p.id}, -1)">-</button>
-                            <span id="num-${p.id}" style="font-weight:700;">${currentCount}</span>
-                            <button class="btn-count" ${isMaksimum ? 'disabled style="opacity:0.3;"' : ''} onclick="changeCount(${p.id}, 1)">+</button>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-                sec.appendChild(grid); container.appendChild(sec);
-            });
-        }
-
-        function filterProducts() {
-            const query = document.getElementById('search-bar').value.toLowerCase();
-            displayShop(products.filter(p => p.title.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)));
-        }
-
-        function changeCount(id, change) {
-            const prod = products.find(p => p.id === id);
-            if (!cart[id]) {
-                cart[id] = { id: prod.id, title: prod.title, price: prod.price, count: 0 };
-            }
-            
-            if (change > 0 && cart[id].count >= prod.stock) {
-                alert("Omborda buyurtma berish uchun yetarli mahsulot qolmagan!");
-                return;
-            }
-
-            cart[id].count += change;
-            if (cart[id].count <= 0) delete cart[id];
-            
-            displayShop();
-            updateCartButton();
-        }
-
-        function updateCartButton() {
-            let total = 0, itemsCount = 0;
-            for (let id in cart) { total += cart[id].price * cart[id].count; itemsCount += cart[id].count; }
-            document.getElementById('cart-box').style.display = itemsCount > 0 ? 'block' : 'none';
-            document.getElementById('total-price-btn').innerText = total.toLocaleString() + " so'm";
-        }
-
-        function getGeoAndSend() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => { sendAllData(position.coords.latitude, position.coords.longitude); },
-                    (error) => { sendAllData(null, null); }
-                );
-            } else { sendAllData(null, null); }
-        }
-
-        function sendAllData(lat, lon) {
-            let items = Object.values(cart);
-            let total = items.reduce((sum, item) => sum + (item.price * item.count), 0);
-            tg.sendData(JSON.stringify({ items: items, total: total, lat: lat, lon: lon }));
-            tg.close();
-        }
-
-        displayShop();
-    </script>
+document.addEventListener('DOMContentLoaded', () => {
+  loadData();
+});
+</script>
 </body>
 </html>
